@@ -14,6 +14,23 @@ return [
     */
 
     'default' => env('AI_PROVIDER', 'openai'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Chat Agent Model
+    |--------------------------------------------------------------------------
+    |
+    | The model (and human-friendly label shown in the UI) used by the chat
+    | agent. Leave the model null to let the configured provider pick its
+    | own default model. Swap the provider via the "default" key above.
+    |
+    */
+
+    'chat' => [
+        'model' => env('AI_MODEL'),
+        'label' => env('AI_MODEL_LABEL', 'AI Assistant'),
+    ],
+
     'default_for_images' => 'gemini',
     'default_for_audio' => 'openai',
     'default_for_transcription' => 'openai',

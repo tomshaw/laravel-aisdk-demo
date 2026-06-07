@@ -11,11 +11,21 @@ beforeEach(function () {
 });
 
 it('renders the sidebar and the main empty state', function () {
+    config(['ai.chat.label' => 'Claude Sonnet 4.6']);
+
     Livewire::test('pages::chat')
         ->assertOk()
         ->assertSee('AI SDK Chat')
         ->assertSee('Ask me')
         ->assertSee('Claude Sonnet 4.6');
+});
+
+it('shows the configured model label in the header', function () {
+    config(['ai.chat.label' => 'GPT-4o']);
+
+    Livewire::test('pages::chat')
+        ->assertOk()
+        ->assertSee('GPT-4o');
 });
 
 it('streams an answer and persists the conversation', function () {

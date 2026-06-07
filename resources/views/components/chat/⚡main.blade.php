@@ -64,7 +64,11 @@ new class extends Component
             ? ChatAgent::make()->forUser($this->user())
             : ChatAgent::make()->continue($this->conversationId, as: $this->user());
 
-        $response = $agent->stream($prompt);
+        $response = $agent->stream(
+            $prompt,
+            provider: config('ai.default'),
+            model: config('ai.chat.model'),
+        );
 
         $answer = '';
 
@@ -184,7 +188,7 @@ new class extends Component
             </button>
             <span class="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-medium text-muted">
                 <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
-                Claude Sonnet 4.6
+                {{ config('ai.chat.label') }}
             </span>
         </div>
 

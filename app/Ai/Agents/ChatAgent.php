@@ -6,15 +6,14 @@ use App\Ai\Tools\Calculator;
 use App\Ai\Tools\CurrentDateTime;
 use App\Ai\Tools\WikipediaLookup;
 use Laravel\Ai\Attributes\MaxSteps;
-use Laravel\Ai\Attributes\Model;
-use Laravel\Ai\Attributes\Provider;
 use Laravel\Ai\Attributes\Temperature;
 use Laravel\Ai\Concerns\RemembersConversations;
 use Laravel\Ai\Contracts\Agent;
 use Laravel\Ai\Contracts\Conversational;
 use Laravel\Ai\Contracts\HasTools;
-use Laravel\Ai\Enums\Lab;
+use Laravel\Ai\Contracts\Tool;
 use Laravel\Ai\Promptable;
+use Laravel\Ai\Providers\Tools\ProviderTool;
 use Laravel\Ai\Providers\Tools\WebSearch;
 use Stringable;
 
@@ -25,9 +24,11 @@ use Stringable;
  * question, decides whether to *act* by calling one of the tools below, the SDK
  * executes the tool and feeds the *observation* back, and the loop repeats until
  * the model is ready to answer. `#[MaxSteps]` simply bounds that loop.
+ *
+ * The provider and model are intentionally not hardcoded here: the provider is
+ * resolved from `config('ai.default')` and the model is passed in at prompt time
+ * from `config('ai.chat.model')`, so this agent works with any configured LLM.
  */
-#[Provider(Lab::Anthropic)]
-#[Model('claude-sonnet-4-6')]
 #[Temperature(0.7)]
 #[MaxSteps(8)]
 class ChatAgent implements Agent, Conversational, HasTools
@@ -59,7 +60,7 @@ class ChatAgent implements Agent, Conversational, HasTools
     /**
      * Get the tools available to the agent.
      *
-     * @return iterable<int, \Laravel\Ai\Contracts\Tool|\Laravel\Ai\Providers\Tools\ProviderTool>
+     * @return iterable<int, Tool|ProviderTool>
      */
     public function tools(): iterable
     {
