@@ -1,0 +1,184 @@
+@import 'tailwindcss';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+/* Class-based dark mode: toggled by adding `.dark` to <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+| Semantic design tokens. The `inline` option makes the generated utilities
+| (bg-surface, text-ink, …) reference the CSS variables below, so flipping the
+| `.dark` class re-themes the whole UI at runtime with no rebuild.
+*/
+@theme inline {
+    --font-display: 'Fraunces', ui-serif, Georgia, serif;
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+
+    --color-bg: var(--bg);
+    --color-surface: var(--surface);
+    --color-surface-2: var(--surface-2);
+    --color-border: var(--border);
+    --color-ink: var(--ink);
+    --color-muted: var(--muted);
+    --color-accent: var(--accent);
+    --color-accent-fg: var(--accent-fg);
+    --color-accent-soft: var(--accent-soft);
+}
+
+/* Light theme — warm "paper & ink" with a clay accent. */
+:root {
+    --bg: #f6f2ea;
+    --surface: #fffdf8;
+    --surface-2: #efe9dd;
+    --border: #e4dccd;
+    --ink: #2a2620;
+    --muted: #8c8273;
+    --accent: #c4562f;
+    --accent-fg: #fff8f4;
+    --accent-soft: #f4ddd1;
+}
+
+/* Dark theme — deep warm charcoal with a brighter clay accent. */
+.dark {
+    --bg: #151310;
+    --surface: #201c16;
+    --surface-2: #2a241c;
+    --border: #362f24;
+    --ink: #ece4d6;
+    --muted: #a89d8b;
+    --accent: #e07a55;
+    --accent-fg: #1a1611;
+    --accent-soft: #392a21;
+}
+
+@layer base {
+    [x-cloak] {
+        display: none !important;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background-color: var(--bg);
+        color: var(--ink);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
+
+    /* Soft atmospheric glow behind the app. */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+            radial-gradient(60rem 40rem at 50% -10%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%),
+            radial-gradient(40rem 30rem at 90% 110%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 70%);
+    }
+
+    ::selection {
+        background-color: color-mix(in srgb, var(--accent) 28%, transparent);
+    }
+}
+
+@layer components {
+    /* Tasteful scrollbars that fade into the surface. */
+    .scroll-soft {
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+    }
+    .scroll-soft::-webkit-scrollbar {
+        width: 9px;
+    }
+    .scroll-soft::-webkit-scrollbar-thumb {
+        background-color: var(--border);
+        border-radius: 9999px;
+        border: 3px solid transparent;
+        background-clip: content-box;
+    }
+
+    /* Blinking caret shown at the end of a streaming reply. */
+    .stream-caret > :last-child::after {
+        content: '';
+        display: inline-block;
+        width: 0.5ch;
+        height: 1.05em;
+        margin-left: 1px;
+        vertical-align: -0.16em;
+        background-color: var(--accent);
+        border-radius: 1px;
+        animation: caret-blink 1.05s steps(2, start) infinite;
+    }
+
+    @keyframes caret-blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
+
+    /* Staggered entrance for messages. */
+    .rise {
+        animation: rise 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    @keyframes rise {
+        from { opacity: 0; transform: translateY(8px); }
+        to { opacity: 1; transform: none; }
+    }
+
+    /* Minimal Markdown styling for assistant replies. */
+    .reply {
+        line-height: 1.65;
+    }
+    .reply > :first-child { margin-top: 0; }
+    .reply > :last-child { margin-bottom: 0; }
+    .reply p { margin: 0.65em 0; }
+    .reply h1, .reply h2, .reply h3 {
+        font-family: var(--font-display);
+        font-weight: 600;
+        line-height: 1.2;
+        margin: 1.1em 0 0.5em;
+    }
+    .reply h1 { font-size: 1.4em; }
+    .reply h2 { font-size: 1.22em; }
+    .reply h3 { font-size: 1.08em; }
+    .reply ul, .reply ol { margin: 0.65em 0; padding-left: 1.4em; }
+    .reply ul { list-style: disc; }
+    .reply ol { list-style: decimal; }
+    .reply li { margin: 0.3em 0; }
+    .reply a {
+        color: var(--accent);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+    }
+    .reply strong { font-weight: 600; }
+    .reply code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.88em;
+        background-color: var(--surface-2);
+        padding: 0.12em 0.38em;
+        border-radius: 0.35rem;
+    }
+    .reply pre {
+        background-color: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        padding: 0.9rem 1rem;
+        overflow-x: auto;
+        margin: 0.8em 0;
+    }
+    .reply pre code {
+        background: none;
+        padding: 0;
+        font-size: 0.85em;
+    }
+    .reply blockquote {
+        border-left: 3px solid var(--accent);
+        padding-left: 0.9rem;
+        color: var(--muted);
+        margin: 0.8em 0;
+    }
+}
